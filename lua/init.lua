@@ -9,6 +9,7 @@ local opts = {
 }
 
 local attached_buffers = {}
+local hl_ns = vim.api.nvim_create_namespace("peacock_ns")
 
 -- 🎨 Custom color palette
 local custom_colors = {
@@ -43,96 +44,52 @@ local function get_leftmost_windows()
   local result = {}
 
   for _, win in ipairs(vim.api.nvim_list_wins()) do
-    local col = vim.fn.win_screenpos(win)[2]
-    if col < leftmost_col then
-      leftmost_col = col
-      result = { win }
-    elseif col == leftmost_col then
-      table.insert(result, win)
+    local ok, col = pcall(function()
+      return vim.fn.win_screenpos(win)[2]
+    end)
+    if ok then
+      if col < leftmost_col then
+        leftmost_col = col
+        result = { win }
+      elseif col == leftmost_col then
+        table.insert(result, win)
+      end
     end
   end
 
   return result
 end
 
----@param win integer
----@param bufnr integer
----@return boolean
-local function is_buf_visible_in_win(win, bufnr)
-  return vim.api.nvim_win_get_buf(win) == bufnr
-end
-
----@param bufnr integer
-local function set_signcolumn_in_leftmost(bufnr)
-  for _, win in ipairs(get_leftmost_windows()) do
-    if is_buf_visible_in_win(win, bufnr) then
-      vim.api.nvim_set_option_value("signcolumn", "yes", {
-        scope = "local",
-        win = win,
-      })
-    end
-  end
-end
-
----@param bufnr integer
-local function place_signs(bufnr)
-  local visible = false
-
-  for _, win in ipairs(get_leftmost_windows()) do
-    if is_buf_visible_in_win(win, bufnr) then
-      visible = true
-      break
-    end
-  end
-
-  vim.fn.sign_unplace("PeacockSignGroup", { buffer = bufnr })
-
-  if visible then
-    local lines = vim.api.nvim_buf_line_count(bufnr)
-    for i = 1, lines do
-      vim.fn.sign_place(i, "PeacockSignGroup", "PeacockSign", bufnr, {
-        lnum = i,
-        priority = opts.priority,
-      })
-    end
-  end
-end
-
 local function setup_highlights()
   local color = get_dynamic_color()
+
+  -- Define custom highlights inside the namespace
+  vim.api.nvim_set_hl(hl_ns, "SignColumn", { bg = color })
+  vim.api.nvim_set_hl(hl_ns, "EndOfBuffer", { fg = color, bg = "NONE" })
 
   vim.api.nvim_set_hl(0, "PeacockDynamic", { fg = color })
   vim.fn.sign_define("PeacockSign", { text = "█", texthl = "PeacockDynamic" })
 
   vim.opt.fillchars:append({ eob = "█" })
 
-  vim.api.nvim_create_autocmd("ColorScheme", {
-    group = vim.api.nvim_create_augroup("PeacockHighlightFix", { clear = true }),
-    callback = function()
-      vim.api.nvim_set_hl(0, "EndOfBuffer", { fg = get_dynamic_color(), bg = "NONE" })
-    end,
-  })
+  vim.api.nvim_set_hl(hl_ns, "EndOfBuffer", { fg = get_dynamic_color(), bg = "NONE" })
 end
 
----@param bufnr integer
-local function attach_buffer(bufnr)
-  if attached_buffers[bufnr] then
-    return
+local function update_window_highlights()
+  local leftmost = get_leftmost_windows()
+  local win_set = {}
+  for _, win in ipairs(leftmost) do
+    win_set[win] = true
   end
-  attached_buffers[bufnr] = true
 
-  vim.api.nvim_buf_attach(bufnr, false, {
-    on_lines = function()
-      place_signs(bufnr)
-    end,
-  })
-end
-
----@param args { buf: integer }
-local function handle_event(args)
-  local bufnr = args.buf
-  attach_buffer(bufnr)
-  set_signcolumn_in_leftmost(bufnr)
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    if win_set[win] then
+      vim.api.nvim_set_option_value("signcolumn", "yes:1", { win = win })
+      vim.api.nvim_win_set_hl_ns(win, hl_ns) -- applies SignColumn and EndOfBuffer
+    else
+      vim.api.nvim_win_set_hl_ns(win, 0) -- fallback to global
+    end
+  end
 end
 
 ---Setup Peacock plugin
@@ -141,25 +98,21 @@ function M.setup(user_opts)
   opts = vim.tbl_deep_extend("force", opts, user_opts or {})
 
   setup_highlights()
+  update_window_highlights()
 
   local group = vim.api.nvim_create_augroup("Peacock", { clear = true })
 
   vim.api.nvim_create_autocmd({
-    "TextChanged",
-    "TextChangedI",
-    "BufReadPost",
-    "BufWinEnter",
-    "BufWritePost",
-    "VimResized",
     "WinEnter",
-    "VimResized", -- terminal window resize
-    "WinEnter", -- focus moves
-    "WinClosed", -- window closed
-    "WinNew", -- new window created
+    "WinLeave",
+    "WinNew",
+    "VimResized",
+    "BufWinEnter",
+    "BufWinLeave",
   }, {
     group = group,
-    callback = function(args)
-      handle_event(args)
+    callback = function()
+      vim.schedule(update_window_highlights)
     end,
   })
 end
