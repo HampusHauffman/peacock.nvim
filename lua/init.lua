@@ -112,7 +112,12 @@ function M.setup(user_opts)
   }, {
     group = group,
     callback = function()
-      vim.schedule(update_window_highlights)
+      vim.schedule(function()
+        update_window_highlights()
+        vim.defer_fn(function()
+          update_window_highlights()
+        end, 30)
+      end)
     end,
   })
 end
