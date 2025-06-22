@@ -75,6 +75,8 @@ local function setup_highlights()
   vim.api.nvim_set_hl(hl_ns, "EndOfBuffer", { fg = get_dynamic_color(), bg = "NONE" })
 end
 
+local original_signcolumns = {}
+
 local function update_window_highlights()
   local leftmost = get_leftmost_windows()
   local win_set = {}
@@ -84,10 +86,20 @@ local function update_window_highlights()
 
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     if win_set[win] then
+      -- Store original signcolumn if not already saved
+      if not original_signcolumns[win] then
+        local current_value = vim.api.nvim_get_option_value("signcolumn", { win = win })
+        original_signcolumns[win] = current_value
+      end
       vim.api.nvim_set_option_value("signcolumn", "yes:1", { win = win })
-      vim.api.nvim_win_set_hl_ns(win, hl_ns) -- applies SignColumn and EndOfBuffer
+      vim.api.nvim_win_set_hl_ns(win, hl_ns)
     else
-      vim.api.nvim_win_set_hl_ns(win, 0) -- fallback to global
+      -- Restore signcolumn only if it was changed
+      if original_signcolumns[win] then
+        pcall(vim.api.nvim_set_option_value, "signcolumn", original_signcolumns[win], { win = win })
+        original_signcolumns[win] = nil
+      end
+      vim.api.nvim_win_set_hl_ns(win, 0)
     end
   end
 end
