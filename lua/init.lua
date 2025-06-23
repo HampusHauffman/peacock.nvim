@@ -1,12 +1,8 @@
 local M = {}
 
 ---@class PeacockOptions
----@field priority integer
----@field color_index? integer
-
+---@field colors string[] List of colors to use
 local opts = {
-  priority = 1,
-  -- 🎨 Custom color palette
   colors = {
     "#f7768e", -- red/pink
     "#e0af68", -- orange/yellow
@@ -65,14 +61,21 @@ end
 local function setup_highlights()
   local color = get_dynamic_color()
 
-  -- Define custom highlights inside the namespace
-  vim.api.nvim_set_hl(hl_ns, "SignColumn", { bg = color })
+  vim.api.nvim_set_hl(0, "PeacockFg", { fg = color }) -- vertical splits
+  vim.api.nvim_set_hl(0, "PeacockBg", { bg = color }) -- vertical splits
+  vim.api.nvim_set_hl(0, "Peacock", { fg = color, bg = color  }) -- vertical splits
+  -- Colors for the default namespaces
+  vim.api.nvim_set_hl(0, "WinSeparator", { fg = color }) -- vertical splits
+  vim.api.nvim_set_hl(0, "FloatBorder", { fg = color }) -- floating window border
+  -- Colors for the Left aligned window namespace
   vim.api.nvim_set_hl(hl_ns, "EndOfBuffer", { fg = color, bg = "NONE" })
+  vim.api.nvim_set_hl(hl_ns, "SignColumn", { bg = color })
 
   vim.api.nvim_set_hl(0, "PeacockDynamic", { fg = color })
 
   vim.opt.fillchars:append({ eob = "█" })
 
+  -- Re-apply dynamic EOB color
   vim.api.nvim_set_hl(hl_ns, "EndOfBuffer", { fg = get_dynamic_color(), bg = "NONE" })
 end
 
@@ -114,9 +117,6 @@ end
 function M.setup(user_opts)
   opts = vim.tbl_deep_extend("force", opts, user_opts or {})
 
-  setup_highlights()
-  update_window_highlights()
-
   local group = vim.api.nvim_create_augroup("Peacock", { clear = true })
 
   vim.api.nvim_create_autocmd({
@@ -130,6 +130,7 @@ function M.setup(user_opts)
     group = group,
     callback = function()
       vim.schedule(function()
+        setup_highlights()
         update_window_highlights()
         -- Seems we need this since i've had issues with some file
         -- manager plugin buffers setting Sign column values after initiation
