@@ -1,30 +1,26 @@
 local M = {}
 
 ---@class PeacockOptions
----@field priority integer Highlight priority
----@field color_index? integer Optional index to use a specific color instead of dynamic color
+---@field priority integer
+---@field color_index? integer
 
--- Default configuration
 local opts = {
   priority = 1,
+  -- 🎨 Custom color palette
+  colors = {
+    "#f7768e", -- red/pink
+    "#e0af68", -- orange/yellow
+    "#9ece6a", -- green
+    "#7aa2f7", -- blue
+    "#bb9af7", -- purple
+    "#7dcfff", -- cyan
+    "#ffffff", -- white
+  },
 }
 
--- Internal state
 local hl_ns = vim.api.nvim_create_namespace("peacock_ns")
-local original_signcolumns = {}
 
--- 🎨 Custom color palette
-local custom_colors = {
-  "#f7768e", -- red/pink
-  "#e0af68", -- orange/yellow
-  "#9ece6a", -- green
-  "#7aa2f7", -- blue
-  "#bb9af7", -- purple
-  "#7dcfff", -- cyan
-  "#ffffff", -- white
-}
-
----Generate a deterministic integer from a string
+---Convert string to int
 ---@param str string
 ---@return integer
 local function string_to_id(str)
@@ -35,18 +31,15 @@ local function string_to_id(str)
   return hash
 end
 
----Get a color based on the current working directory
----@return string hex_color
+---Get one of the colors available based of the current dir
+---@return string
 local function get_dynamic_color()
-  if opts.color_index then
-    return custom_colors[(opts.color_index - 1) % #custom_colors + 1]
-  end
   local id = string_to_id(vim.fn.getcwd())
-  return custom_colors[(id % #custom_colors) + 1]
+  return opts.colors[(id % #opts.colors) + 1]
 end
 
----Find the leftmost windows on the screen
----@return integer[] win_ids
+---Get the left most windows id in an array
+---@return integer[] All the id's of windows that are 0 column aligned
 local function get_leftmost_windows()
   local leftmost_col = math.huge
   local result = {}
@@ -68,22 +61,29 @@ local function get_leftmost_windows()
   return result
 end
 
----Setup highlights using the dynamic color
+---Setup function to create the different highlights needed and set up eol sign
 local function setup_highlights()
   local color = get_dynamic_color()
 
-  vim.api.nvim_set_hl(hl_ns, "SignColumn", { bg = color, priority = opts.priority })
-  vim.api.nvim_set_hl(hl_ns, "EndOfBuffer", { fg = color, bg = "NONE", priority = opts.priority })
+  -- Define custom highlights inside the namespace
+  vim.api.nvim_set_hl(hl_ns, "SignColumn", { bg = color })
+  vim.api.nvim_set_hl(hl_ns, "EndOfBuffer", { fg = color, bg = "NONE" })
+
   vim.api.nvim_set_hl(0, "PeacockDynamic", { fg = color })
 
   vim.opt.fillchars:append({ eob = "█" })
+
+  vim.api.nvim_set_hl(hl_ns, "EndOfBuffer", { fg = get_dynamic_color(), bg = "NONE" })
 end
 
----Update window highlights and signcolumn behavior for leftmost windows
+local original_signcolumns = {}
+
+---Updates the highlights
+---This saves current SignColumn settings for a window
+---If window is on the left side sets the ns_id of window to one with a unique color
+---Else resets window SignColumn setting
 local function update_window_highlights()
   local leftmost = get_leftmost_windows()
-
-  -- Set of windows that are left aligned
   local win_set = {}
   for _, win in ipairs(leftmost) do
     win_set[win] = true
@@ -91,13 +91,15 @@ local function update_window_highlights()
 
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     if win_set[win] then
+      -- Store original signcolumn if not already saved
       if not original_signcolumns[win] then
-        local current = vim.api.nvim_get_option_value("signcolumn", { win = win })
-        original_signcolumns[win] = current
+        local current_value = vim.api.nvim_get_option_value("signcolumn", { win = win })
+        original_signcolumns[win] = current_value
       end
       vim.api.nvim_set_option_value("signcolumn", "yes:1", { win = win })
       vim.api.nvim_win_set_hl_ns(win, hl_ns)
     else
+      -- Restore signcolumn only if it was changed
       if original_signcolumns[win] then
         pcall(vim.api.nvim_set_option_value, "signcolumn", original_signcolumns[win], { win = win })
         original_signcolumns[win] = nil
@@ -129,7 +131,11 @@ function M.setup(user_opts)
     callback = function()
       vim.schedule(function()
         update_window_highlights()
-        vim.defer_fn(update_window_highlights, 30)
+        -- Seems we need this since i've had issues with some file
+        -- manager plugin buffers setting Sign column values after initiation
+        vim.defer_fn(function()
+          update_window_highlights()
+        end, 30)
       end)
     end,
   })
