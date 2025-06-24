@@ -60,23 +60,24 @@ end
 ---Setup function to create the different highlights needed and set up eol sign
 local function setup_highlights()
   local color = get_dynamic_color()
+  local nvim_set_hl = vim.api.nvim_set_hl
 
-  vim.api.nvim_set_hl(0, "PeacockFg", { fg = color }) -- vertical splits
-  vim.api.nvim_set_hl(0, "PeacockBg", { bg = color }) -- vertical splits
-  vim.api.nvim_set_hl(0, "Peacock", { fg = color, bg = color  }) -- vertical splits
-  -- Colors for the default namespaces
-  vim.api.nvim_set_hl(0, "WinSeparator", { fg = color }) -- vertical splits
-  vim.api.nvim_set_hl(0, "FloatBorder", { fg = color }) -- floating window border
-  -- Colors for the Left aligned window namespace
-  vim.api.nvim_set_hl(hl_ns, "EndOfBuffer", { fg = color, bg = "NONE" })
-  vim.api.nvim_set_hl(hl_ns, "SignColumn", { bg = color })
+  nvim_set_hl(0, "PeacockFg", { fg = color }) -- vertical splits
+  nvim_set_hl(0, "PeacockBg", { bg = color }) -- vertical splits
+  nvim_set_hl(0, "Peacock", { fg = color, bg = color  }) -- vertical splits
 
-  vim.api.nvim_set_hl(0, "PeacockDynamic", { fg = color })
+  -- Default namespaces
+  nvim_set_hl(0, "WinSeparator", { fg = color }) -- vertical splits
+  nvim_set_hl(0, "FloatBorder", { fg = color }) -- floating window border
+
+  -- Left aligned window namespace
+  nvim_set_hl(hl_ns, "EndOfBuffer", { fg = color, bg = "NONE" })
+  nvim_set_hl(hl_ns, "SignColumn", { bg = color })
+  nvim_set_hl(hl_ns, "EndOfBuffer", { fg = color, bg = "NONE" })
 
   vim.opt.fillchars:append({ eob = "█" })
 
   -- Re-apply dynamic EOB color
-  vim.api.nvim_set_hl(hl_ns, "EndOfBuffer", { fg = get_dynamic_color(), bg = "NONE" })
 end
 
 local original_signcolumns = {}
