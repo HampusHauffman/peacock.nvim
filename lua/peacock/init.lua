@@ -64,11 +64,7 @@ local function setup_highlights()
 
   nvim_set_hl(0, "PeacockFg", { fg = color }) -- vertical splits
   nvim_set_hl(0, "PeacockBg", { bg = color }) -- vertical splits
-  nvim_set_hl(0, "Peacock", { fg = color, bg = color  }) -- vertical splits
-
-  -- Default namespaces
-  nvim_set_hl(0, "WinSeparator", { fg = color }) -- vertical splits
-  nvim_set_hl(0, "FloatBorder", { fg = color }) -- floating window border
+  nvim_set_hl(0, "Peacock", { fg = color, bg = color }) -- vertical splits
 
   -- Left aligned window namespace
   nvim_set_hl(hl_ns, "EndOfBuffer", { fg = color, bg = "NONE" })
@@ -79,8 +75,6 @@ local function setup_highlights()
 
   -- Re-apply dynamic EOB color
 end
-
-local original_signcolumns = {}
 
 ---Updates the highlights
 ---This saves current SignColumn settings for a window
@@ -95,19 +89,10 @@ local function update_window_highlights()
 
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     if win_set[win] then
-      -- Store original signcolumn if not already saved
-      if not original_signcolumns[win] then
-        local current_value = vim.api.nvim_get_option_value("signcolumn", { win = win })
-        original_signcolumns[win] = current_value
-      end
       vim.api.nvim_set_option_value("signcolumn", "yes:1", { win = win })
       vim.api.nvim_win_set_hl_ns(win, hl_ns)
     else
-      -- Restore signcolumn only if it was changed
-      if original_signcolumns[win] then
-        pcall(vim.api.nvim_set_option_value, "signcolumn", original_signcolumns[win], { win = win })
-        original_signcolumns[win] = nil
-      end
+      vim.api.nvim_set_option_value("signcolumn", "auto", { win = win })
       vim.api.nvim_win_set_hl_ns(win, 0)
     end
   end
@@ -116,6 +101,7 @@ end
 ---Setup Peacock plugin
 ---@param user_opts? PeacockOptions
 function M.setup(user_opts)
+  setup_highlights()
   opts = vim.tbl_deep_extend("force", opts, user_opts or {})
 
   local group = vim.api.nvim_create_augroup("Peacock", { clear = true })
