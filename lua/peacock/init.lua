@@ -2,6 +2,7 @@ local M = {}
 
 ---@class PeacockOptions
 ---@field colors string[] List of colors to use
+---@field sign_column_width number The width of the peacock column / sign column. This is also what each window will reset to after being left aligned
 local opts = {
   colors = {
     "#f7768e", -- red/pink
@@ -12,11 +13,10 @@ local opts = {
     "#7dcfff", -- cyan
     "#ffffff", -- white
   },
+  sign_column_width = 1,
 }
 
 local hl_ns = vim.api.nvim_create_namespace("peacock_ns")
---- Original sign column set that was set before
-local sign_column = nil
 
 ---Convert string to int
 ---@param str string
@@ -94,11 +94,10 @@ local function update_window_highlights()
       local current_val = vim.api.nvim_get_option_value("signcolumn", { win = win })
       -- Only set to "yes:1" if current value does NOT include a digit (i.e., not already reserving space)
       if not string.find(current_val, "%d") then
-        vim.api.nvim_set_option_value("signcolumn", "yes:1", { win = win })
+        vim.api.nvim_set_option_value("signcolumn", "yes:" .. opts.sign_column_width, { win = win })
       end
       vim.api.nvim_win_set_hl_ns(win, hl_ns)
     else
-      vim.api.nvim_set_option_value("signcolumn", sign_column, { win = win })
       vim.api.nvim_win_set_hl_ns(win, 0)
     end
   end
@@ -107,9 +106,6 @@ end
 ---Setup Peacock plugin
 ---@param user_opts? PeacockOptions
 function M.setup(user_opts)
-  if sign_column == nil then
-    sign_column = vim.o.signcolumn
-  end
   setup_highlights()
   opts = vim.tbl_deep_extend("force", opts, user_opts or {})
 
