@@ -6,7 +6,8 @@ Peacock.nvim dynamically highlights the **leftmost window** in your Neovim layou
 It’s a subtle but effective visual anchor, especially helpful in split-heavy workflows — and highly customizable for a themed experience.
 
 ![peacock demo](https://user-images.githubusercontent.com/your-demo-gif-url.gif)
-<img width="1512" alt="Screenshot of peacock.nvim in action" src="https://github.com/user-attachments/assets/54481711-945d-41e3-8c79-18aecfc6b4d5" />
+<img width="1500" alt="Screenshot of peacock.nvim in action" src="https://github.com/user-attachments/assets/54481711-945d-41e3-8c79-18aecfc6b4d5" />
+<img width="1500" alt="Screenshot 2025-06-27 at 21 46 40" src="https://github.com/user-attachments/assets/fd67dffe-4eb6-4b12-9c25-97195023031c" />
 
 
 ## 🚀 Installation
