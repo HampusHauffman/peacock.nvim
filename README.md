@@ -50,8 +50,11 @@ require("peacock").setup({
 
 ### Highlight Group	Description:
 Highlight groups defined by peacock can be used to color more than the signcolumn.
+
 **PeacockFg**	Foreground color (based on project)
+
 **PeacockBg**	Background color (based on project)
+
 **Peacock**	Both fg and bg combined
 
 You can color other parts of your UI (e.g., floating borders, line numbers, lualine, etc.):
