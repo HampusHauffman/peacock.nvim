@@ -26,6 +26,7 @@ local opts = {
   },
   sign_column_width = 1,
   bar_enabled = true,
+  eob_enabled = true,
 }
 
 local hl_ns = vim.api.nvim_create_namespace("peacock_ns")
@@ -83,9 +84,11 @@ local function setup_highlights()
   -- Left aligned window namespace
   nvim_set_hl(hl_ns, "EndOfBuffer", { fg = color, bg = "NONE" })
   nvim_set_hl(hl_ns, "SignColumn", { bg = color })
-  nvim_set_hl(hl_ns, "EndOfBuffer", { fg = color, bg = "NONE" })
 
-  vim.opt.fillchars:append({ eob = "█" })
+  if opts.eob_enabled then
+    nvim_set_hl(hl_ns, "EndOfBuffer", { fg = color, bg = "NONE" })
+    vim.opt.fillchars:append({ eob = "█" })
+  end
 
   -- Re-apply dynamic EOB color
 end
