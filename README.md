@@ -5,6 +5,7 @@ Each project's color is based on its path meaning each project will keep its own
 
 ![peacock demo](https://user-images.githubusercontent.com/your-demo-gif-url.gif)
 <img width="1500" alt="Screenshot 2025-06-27 at 21 46 40" src="https://github.com/user-attachments/assets/fd67dffe-4eb6-4b12-9c25-97195023031c" />
+![Screenshot 2025-06-27 at 21 46 40_transparent](https://github.com/user-attachments/assets/f109f6a3-0e76-4dda-9050-326b96424e37)
 
 
 ## 🚀 Simple Installation
