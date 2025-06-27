@@ -1,13 +1,13 @@
 # 🦚 peacock.nvim
 
-**Add flair to your focus.**  
-Peacock.nvim dynamically highlights your different neovim instances.
+### Peacock.nvim highlights your different neovim projects. 
+Each project's color is based on its path meaning each project will keep its own color as long as the path remains the same.
 
 ![peacock demo](https://user-images.githubusercontent.com/your-demo-gif-url.gif)
 <img width="1500" alt="Screenshot 2025-06-27 at 21 46 40" src="https://github.com/user-attachments/assets/fd67dffe-4eb6-4b12-9c25-97195023031c" />
 
 
-## 🚀 Installation
+## 🚀 Simple Installation
 
 ### Using [lazy.nvim](https://github.com/folke/lazy.nvim)
 
@@ -20,12 +20,12 @@ Peacock.nvim dynamically highlights your different neovim instances.
   end,
 }
 ```
-⚙️ Configuration
+## ⚙️ Configuration
 Peacock accepts an optional setup table.
 
 ```lua
 require("peacock").setup({
-  colors = {
+  colors = { -- Colors that you'd like to use instead of the defaults.
     "#fca5a5",
     "#fdba74",
     "#fcd34d",
@@ -44,18 +44,19 @@ require("peacock").setup({
     "#f9a8d4",
     "#fda4af",
   },
-  sign_column_width = 1,
-  bar_enabled = true,
-  eob_enabled = true,
+  bar_enabled = true, -- When this is enabled (default) the left most window will show its signcolumn with the project color.
+  sign_column_width = 1, -- This is the width of the bar sowhing in the left most window.
+  eob_enabled = true, -- To give a more unified look we set the eob character to █ and color it to the project color
 })
 ```
 
 ### Highlight Group	Description:
+Highlight groups defined by peacock can be used to color more than the signcolumn.
 **PeacockFg**	Foreground color (based on project)
 **PeacockBg**	Background color (based on project)
 **Peacock**	Both fg and bg combined
 
-You can use these to color other parts of your UI (e.g., floating borders, line numbers, lualine, etc.):
+You can color other parts of your UI (e.g., floating borders, line numbers, lualine, etc.):
 ```lua
 require("peacock").setup()
 
