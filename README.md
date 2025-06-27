@@ -1,9 +1,7 @@
 # 🦚 peacock.nvim
 
 **Add flair to your focus.**  
-Peacock.nvim dynamically highlights the **leftmost window** in your Neovim layout using vibrant colors derived from your current working directory.
-
-It’s a subtle but effective visual anchor, especially helpful in split-heavy workflows — and highly customizable for a themed experience.
+Peacock.nvim dynamically highlights your different neovim instances.
 
 ![peacock demo](https://user-images.githubusercontent.com/your-demo-gif-url.gif)
 <img width="1500" alt="Screenshot 2025-06-27 at 21 46 40" src="https://github.com/user-attachments/assets/fd67dffe-4eb6-4b12-9c25-97195023031c" />
