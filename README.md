@@ -8,19 +8,6 @@ It’s a subtle but effective visual anchor, especially helpful in split-heavy w
 ![peacock demo](https://user-images.githubusercontent.com/your-demo-gif-url.gif)
 <img width="1512" alt="Screenshot of peacock.nvim in action" src="https://github.com/user-attachments/assets/54481711-945d-41e3-8c79-18aecfc6b4d5" />
 
----
-
-## ✨ Features
-
-- 🎨 **Dynamic color assignment** based on your working directory
-- 🪟 **Leftmost window highlighting** using `SignColumn` and optional `EndOfBuffer` styling
-- 📐 **Custom sign column width** for aligned UI
-- 🧠 **Hash-based palette selection** — consistent per project
-- 🪄 **Automatic updates** on common window/buffer events
-- 🔧 **Optional configuration** — works out of the box
-- 🎛️ **Reusable highlight groups** for your own UI theming
-
----
 
 ## 🚀 Installation
 
