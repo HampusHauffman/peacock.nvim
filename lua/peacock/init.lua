@@ -3,17 +3,29 @@ local M = {}
 ---@class PeacockOptions
 ---@field colors string[] List of colors to use
 ---@field sign_column_width number The width of the peacock column / sign column. This is also what each window will reset to after being left aligned
+---@field bar_enabled boolean Whether or not to show the left bar
 local opts = {
   colors = {
-    "#f7768e", -- red/pink
-    "#e0af68", -- orange/yellow
-    "#9ece6a", -- green
-    "#7aa2f7", -- blue
-    "#bb9af7", -- purple
-    "#7dcfff", -- cyan
-    "#ffffff", -- white
+    "#fca5a5",
+    "#fdba74",
+    "#fcd34d",
+    "#fde047",
+    "#bef264",
+    "#86efac",
+    "#6ee7b7",
+    "#5eead4",
+    "#67e8f9",
+    "#7dd3fc",
+    "#93c5fd",
+    "#a5b4fc",
+    "#c4b5fd",
+    "#d8b4fe",
+    "#f0abfc",
+    "#f9a8d4",
+    "#fda4af",
   },
   sign_column_width = 1,
+  bar_enabled = true,
 }
 
 local hl_ns = vim.api.nvim_create_namespace("peacock_ns")
@@ -111,6 +123,9 @@ function M.setup(user_opts)
 
   local group = vim.api.nvim_create_augroup("Peacock", { clear = true })
 
+  if not opts.bar_enabled then
+    return
+  end
   vim.api.nvim_create_autocmd({
     "WinEnter",
     "WinLeave",
