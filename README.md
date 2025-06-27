@@ -29,8 +29,6 @@ It’s a subtle but effective visual anchor, especially helpful in split-heavy w
 ```lua
 {
   "hampushauffman/peacock.nvim",
-  name = "peacock",
-  dir = "~/Documents/peacock.nvim", -- optional if developing locally
   lazy = false,
   config = function()
     require("peacock").setup()
@@ -66,77 +64,20 @@ require("peacock").setup({
   eob_enabled = true,
 })
 ```
-🔧 Options
-Option	Type	Default	Description
-colors	string[]	Built-in	A list of hex color strings. One will be chosen per project based on hash.
-sign_column_width	number	1	Width of the left signcolumn for highlighted windows.
-bar_enabled	boolean	true	Whether to enable Peacock’s left-bar highlighting.
-eob_enabled	boolean	true	Whether to replace and color the EndOfBuffer (~) characters.
 
-📸 When does it update?
-Peacock updates dynamically on:
-
-WinEnter, WinLeave
-
-BufWinEnter, BufWinLeave
-
-WinNew, VimResized
-
-This ensures your leftmost window remains styled correctly as splits change.
-
-🧪 Example Setups
-Minimal setup
-lua
-Kopiera
-Redigera
-require("peacock").setup()
-Disable EOB character styling
-lua
-Kopiera
-Redigera
-require("peacock").setup({
-  eob_enabled = false,
-})
-Custom palette + wide sign column
-lua
-Kopiera
-Redigera
-require("peacock").setup({
-  sign_column_width = 2,
-  colors = { "#ff6b6b", "#feca57", "#48dbfb", "#1dd1a1" },
-})
-🎨 Advanced Usage: Link Peacock Highlights
-Peacock defines three core highlight groups:
-
-Highlight Group	Description
-PeacockFg	Foreground color (based on project)
-PeacockBg	Background color (based on project)
-Peacock	Both fg and bg combined
+### Highlight Group	Description:
+**PeacockFg**	Foreground color (based on project)
+**PeacockBg**	Background color (based on project)
+**Peacock**	Both fg and bg combined
 
 You can use these to color other parts of your UI (e.g., floating borders, line numbers, lualine, etc.):
-
-lua
-Kopiera
-Redigera
+```lua
 require("peacock").setup()
 
 local nvim_set_hl = vim.api.nvim_set_hl
-
--- Apply Peacock color to UI components
+-- Apply Peacock color to other UI components
 nvim_set_hl(0, "WinSeparator", { link = "PeacockFg" })
 nvim_set_hl(0, "FloatBorder", { link = "PeacockFg" })
 nvim_set_hl(0, "LineNr", { link = "PeacockFg" })
 
--- Apply Peacock to lualine (if installed)
-nvim_set_hl(0, "lualine_a_normal", { link = "PeacockBg" })
-nvim_set_hl(0, "lualine_b_normal", { link = "PeacockFg" })
-
--- Transitional groups might require deferred application
-vim.schedule(function()
-  nvim_set_hl(
-    0,
-    "lualine_transitional_lualine_a_normal_to_StatusLine",
-    { link = "PeacockFg" }
-  )
-end)
-You can also extract the hex color from the highlight group if you want to generate your own styles.
+```
