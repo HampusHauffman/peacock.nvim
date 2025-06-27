@@ -36,12 +36,11 @@ It’s a subtle but effective visual anchor, especially helpful in split-heavy w
     require("peacock").setup()
   end,
 }
+```
 ⚙️ Configuration
 Peacock accepts an optional setup table.
 
-lua
-Kopiera
-Redigera
+```lua
 require("peacock").setup({
   colors = {
     "#fca5a5",
@@ -66,6 +65,7 @@ require("peacock").setup({
   bar_enabled = true,
   eob_enabled = true,
 })
+```
 🔧 Options
 Option	Type	Default	Description
 colors	string[]	Built-in	A list of hex color strings. One will be chosen per project based on hash.
