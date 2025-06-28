@@ -1,6 +1,7 @@
 # 🦚 peacock.nvim
 
 ![Screenshot 2025-06-27 at 21 46 40_transparent](https://github.com/user-attachments/assets/f109f6a3-0e76-4dda-9050-326b96424e37)
+![Screenshot 2025-06-27 at 21 46 40_2](https://github.com/user-attachments/assets/d98c6466-2f97-468e-81c2-fa9c2f967789)
 
 ### Peacock.nvim highlights your different projects in neovim. 
 Each project's color is based on its path meaning each project will keep its own color as long as the path remains the same.
